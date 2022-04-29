@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#parameters should be 1. ip address/range 2. port range
+
+if [ "$1" == "" ] || [ "$2" == "" ]
+then
+	echo "INCORRECT SYNTAX!"
+	echo "Correct Syntax: autonmap 192.168.0.63 1-10000"
+	echo "Correct Syntax: autonmap 192.168.0.0/24 - <----all ports"
+	exit
+fi
+
+ports=`nmap -p$2 -T4 $1 | grep open | cut -d "/" -f 1 | tr -s '\n' ',' | rev | cut -c 2- | rev`
+nmap -T4 -A -p$ports $1
