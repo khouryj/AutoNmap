@@ -1,14 +1,50 @@
 #!/bin/bash
 
-#parameters should be 1. ip address/range 2. port range
+#Functions
+validate_ipaddr() {
+	if [ "$ipaddr" == "" ]
+	then
+		echo "No IP address was entered, aborting..."
+		exit
+	fi
+}
 
-if [ "$1" == "" ] || [ "$2" == "" ]
+validate_portrange() {
+	if [ "$portrange" == "" ]
+	then
+		portrange="-"
+	fi
+}
+
+validate_cve() {
+	if [ "$cve" == "y" ] || [ "$cve" == "yes" ] || [ "$cve" == "Yes" ]
+	then
+		cve="Y"
+	else
+		cve="N"
+	fi
+}
+#End Functions
+
+#Collect Input
+echo "AutoNmap ver 1.0.0"
+read -p "Enter the IP address to scan: " ipaddr
+validate_ipaddr
+
+read -p "Enter the ports to scan (ex: 1-1000, '-' for all, default: -): " portrange
+validate_portrange
+
+read -p "Would you like to do a CVE scan? (Y or N, default: N): " cve
+validate_cve
+#End Collect Input
+
+#Perform Scans
+ports=`nmap -p$portrange -T4 $ipaddr | grep open | cut -d "/" -f 1 | tr -s '\n' ',' | rev | cut -c 2- | rev`
+if [ "$ports" == "" ]
 then
-	echo "INCORRECT SYNTAX!"
-	echo "Correct Syntax: autonmap 192.168.0.63 1-10000"
-	echo "Correct Syntax: autonmap 192.168.0.0/24 - <----all ports"
+	echo "AutoNmap failed to find open ports on target $ipaddr, aborting scan."
 	exit
 fi
 
-ports=`nmap -p$2 -T4 $1 | grep open | cut -d "/" -f 1 | tr -s '\n' ',' | rev | cut -c 2- | rev`
-nmap -T4 -A -p$ports $1
+nmap -T4 -A -p$ports $ipaddr
+#End Perform Scans
