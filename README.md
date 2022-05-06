@@ -18,11 +18,4 @@ Step 3: `chmod a+x install.sh`
 Step 4: `sudo ./install.sh`
 
 ## Usage
-
-As mentioned before, autonmap requires sudo to run. It will not work without it. You can see the syntax at any point in time by typing: sudo autonmap
-
-Example usages: <br />
-- `sudo autonmap 192.168.0.53 -`
-	- This scans all ports on the given ip address
-- `sudo autonmap 192.168.0.0/24 1-5387`
-	- This scans the entire ip range for the specified ports
+Just type `sudo autonmap` and the script will take you through all of the inputs required.
